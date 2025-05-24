@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@plugin "flowbite-react/plugin/tailwindcss";
+@source "../../.flowbite-react/class-list.json";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@import "./font.css";
+@theme {
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-roboto: "Roboto Condensed", sans-serif;
+  --font-padauk: "Padauk", sans-serif;
+  --font-oswald: "Oswald", sans-serif;
+  /* ... */
+}
