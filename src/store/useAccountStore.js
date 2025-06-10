@@ -1,5 +1,7 @@
+// ✅ This line is required
+
 import { create } from "zustand";
-import { persist } from "zustand/middleware"; // ✅ This line is required
+import { persist } from "zustand/middleware";
 
 const useAccountStore = create(
   persist(
