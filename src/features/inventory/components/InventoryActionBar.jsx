@@ -1,19 +1,60 @@
-import { Plus, Search } from "lucide-react";
+"use client";
+import { productApiUrl } from "@/services/product";
+import { debounce, throttle } from "lodash";
+import { Plus, Search, X } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-const InventoryActionBar = () => {
+import React, { useEffect, useRef } from "react";
+
+const InventoryActionBar = ({ setFetchUrl }) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const searchRef = useRef();
+
+  useEffect(() => {
+    if (searchParams.get("q")) {
+      searchRef.current.value = searchParams.get("q");
+    }
+  }, []);
+
+  const handleSearch = debounce((event) => {
+    const q = event.target.value;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("q", event.target.value);
+    console.log(params);
+    router.push(`?${params}`);
+    setFetchUrl(`${productApiUrl}?${params}`);
+  }, 500);
+
+  const handleClearSearch = () => {
+    searchRef.current.value = "";
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("q");
+    console.log(params);
+    router.push(`?${params}`);
+    setFetchUrl(`${productApiUrl}?${params}`);
+  };
   return (
     <div className="flex justify-between items-center mb-5">
       <div className="relative w-full max-w-sm">
         <input
+          ref={searchRef}
+          onChange={handleSearch}
           type="text"
           id="first_name"
           className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block pl-4 pr-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="John"
-          required
         />
-        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 size-4 pointer-events-none" />
+        {searchParams.get("q") ? (
+          <X
+            onClick={handleClearSearch}
+            className="absolute right-3 active:scale-75 duration-150 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 size-4 "
+          />
+        ) : (
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 size-4 " />
+        )}
       </div>
 
       <div>
