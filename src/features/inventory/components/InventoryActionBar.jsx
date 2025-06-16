@@ -1,41 +1,16 @@
 "use client";
-import { productApiUrl } from "@/services/product";
-import { debounce, throttle } from "lodash";
+
 import { Plus, Search, X } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-
 import React, { useEffect, useRef } from "react";
+import useProduct from "../hooks/useProduct";
 
-const InventoryActionBar = ({ setFetchUrl }) => {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const searchRef = useRef();
-
-  useEffect(() => {
-    if (searchParams.get("q")) {
-      searchRef.current.value = searchParams.get("q");
-    }
-  }, []);
-
-  const handleSearch = debounce((event) => {
-    const q = event.target.value;
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("q", event.target.value);
-    console.log(params);
-    router.push(`?${params}`);
-    setFetchUrl(`${productApiUrl}?${params}`);
-  }, 500);
-
-  const handleClearSearch = () => {
-    searchRef.current.value = "";
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("q");
-    console.log(params);
-    router.push(`?${params}`);
-    setFetchUrl(`${productApiUrl}?${params}`);
-  };
+const InventoryActionBar = ({
+  searchRef,
+  handleClearSearch,
+  handleSearch,
+  searchParams,
+}) => {
   return (
     <div className="flex justify-between items-center mb-5">
       <div className="relative w-full max-w-sm">

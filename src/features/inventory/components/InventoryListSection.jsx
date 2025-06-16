@@ -1,47 +1,49 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import InventoryTableRow from "./InventoryTableRow";
+
 import InventoryTable from "./InventoryTable";
 import InventoryActionBar from "./InventoryActionBar";
-
-import useSWR from "swr";
-import { fetchProduct, productApiUrl } from "@/services/product";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 import ProductListSkeletonLoader from "./ProductListSkeletonLoader";
-import { useSearchParams } from "next/navigation";
+
 import InventoryPagination from "./InventoryPagination";
+import useProduct from "../hooks/useProduct";
 
 const InventoryListSection = () => {
-  const searchParams = useSearchParams();
-  const [fetchUrl, setFetchUrl] = useState(`${productApiUrl}`);
-  const { data, isLoading, error } = useSWR(fetchUrl, fetchProduct);
+  const {
+    productLoading,
+    products,
 
-  useEffect(() => {
-    setFetchUrl(`${productApiUrl}?${searchParams.toString()}`);
-  }, []);
-  // const handleNext = () => {
-  //   const currentPage = parseInt(data?.meta?.current_page);
-  //   const lastPage = data?.meta?.last_page;
-  //   const nextPage = currentPage + 1 < lastPage ? currentPage + 1 : lastPage;
-
-  //   setFetchUrl(`${productApiUrl}?limit=5&page=${nextPage}`);
-  // };
-
-  // if (isLoading) {
-  //   return <p>loading...</p>;
-  // }
+    searchParams,
+    limitRef,
+    handleLimit,
+    handlePaginate,
+    searchRef,
+    handleClearSearch,
+    handleSearch,
+  } = useProduct();
 
   return (
     <section className="p-5 mt-2">
       <h3 className="text-xl font-bold mb-5">Inventory List</h3>
-      <InventoryActionBar setFetchUrl={setFetchUrl} />
+      <InventoryActionBar
+        handleClearSearch={handleClearSearch}
+        handleSearch={handleSearch}
+        searchRef={searchRef}
+        searchParams={searchParams}
+      />
 
-      {isLoading ? (
+      {productLoading ? (
         <ProductListSkeletonLoader />
       ) : (
-        <InventoryTable products={data?.data} />
+        <InventoryTable products={products?.data} />
       )}
-      <InventoryPagination data={data} setFetchUrl={setFetchUrl} />
+      <InventoryPagination
+        data={products}
+        limitRef={limitRef}
+        handleLimit={handleLimit}
+        handlePaginate={handlePaginate}
+        searchParams={searchParams}
+      />
     </section>
   );
 };

@@ -1,40 +1,16 @@
 "use client";
 import React, { useRef } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { productApiUrl } from "@/services/product";
+import useProduct from "../hooks/useProduct";
 
-const InventoryPagination = ({ data, setFetchUrl }) => {
-  const router = useRouter();
-  const limitRef = useRef();
-
-  const searchParams = useSearchParams();
-  const handleNext = async () => {
-    const url = new URL(data?.links?.next);
-    router.push(`${url.search}`);
-    setFetchUrl(`${productApiUrl}${url.search}`);
-  };
-
-  const handlePrev = async () => {
-    const url = new URL(data?.links?.prev);
-    router.push(`${url.search}`);
-    setFetchUrl(`${productApiUrl}${url.search}`);
-  };
-
-  const handleLimit = () => {
-    // change to  object
-
-    const paramObj = Object.fromEntries(searchParams.entries());
-    // const url = new URL(data?.links?.next);
-    const currentParams = new URLSearchParams({
-      ...paramObj,
-      limit: limitRef.current.value,
-      page: 1,
-    });
-    const newQueryString = currentParams.toString();
-    router.push(`?${newQueryString}`);
-    setFetchUrl(`${productApiUrl}?${newQueryString}`);
-  };
+const InventoryPagination = ({
+  data,
+  searchParams,
+  limitRef,
+  handleLimit,
+  handlePaginate,
+}) => {
+  
 
   return (
     <div className="flex justify-between items-center">
@@ -63,7 +39,7 @@ const InventoryPagination = ({ data, setFetchUrl }) => {
           type="button"
           disabled={!data?.links?.prev}
           //   onClick={() => setFetchUrl(data?.links?.prev)}
-          onClick={handlePrev}
+          onClick={() => handlePaginate(data?.links?.prev)} // careful
           className=" disabled:opacity-65 disabled:pointer-events-none flex items-center justify-center gap-2 px-3 h-8  text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
         >
           <ArrowLeft className="size-3 " />
@@ -71,7 +47,7 @@ const InventoryPagination = ({ data, setFetchUrl }) => {
         <button
           type="button"
           disabled={!data?.links?.next}
-          onClick={handleNext}
+          onClick={() => handlePaginate(data?.links?.next)}
           className=" disabled:opacity-65 disabled:pointer-events-none flex items-center justify-center gap-2 px-3 h-8 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
         >
           <ArrowRight className="size-3" />
